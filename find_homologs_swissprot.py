@@ -20,8 +20,8 @@ def build_seq_description_lst(descriptions_df, seq_dict):
     return new_seq_id
 
 
+"""read protein sequences from fa.gz file and build a dictionary {key= record name, val = seq}"""
 def read_protein_seq(zip_file_path):
-    """reading protein sequences from fa.gz file and build a dictionary {key= rec name, val = seq}"""
     zip_file_path = gzip.open(zip_file_path, "rt")
     fasta_file = SeqIO.parse(zip_file_path, 'fasta')
     seq_dict = {}
@@ -53,7 +53,7 @@ def read_protein_seq_flybase(fasta_path):
     return seq_dict
 
 
-def write_dict_to_fasta(seqs_dicts, output_path, seq_format = "seq_record"):
+def write_dict_to_fasta(seqs_dicts, output_path):
     output_file = open(output_path, 'w')
     for seq_query in seqs_dicts:
         for seq_id, seq in seq_query.items():
@@ -77,18 +77,19 @@ def write_list_to_fasta(seqs_lst, output_path):
     print("Done writing fasta file!")
 
 
+"""create new dict contains only seq with more than 1500 residues"""
 def discarded_short_seq(seq_dict):
-    """create new dict contains only seq with more than 1500 amino acids/bases"""
     new_seq_dict = {}
     for seq in seq_dict:
         if len(seq_dict[seq]) > 1500:
             new_seq_dict[seq] = seq_dict[seq]
-    print(len(new_seq_dict), "seq longer than 1500 bases")
+    print(len(new_seq_dict), "seq longer than 1500 residues")
 
     return new_seq_dict
 
+
+"""create new dict contains only seq of α1 subunit proteins, encoded by the CACNA1x genes and edit the seq label"""
 def filter_CAC_seq(seq_dict):
-    """create new dict contains only seq of α1 subunit proteins, encoded by the CACNA1x genes and edit the seq label"""
     new_seq_dict = {}
     by_type_dict = {}
     for seq in seq_dict:
@@ -113,8 +114,8 @@ def filter_CAC_seq(seq_dict):
     return by_type_dict
 
 
+"""open and read the JSON file"""
 def read_json_file(json_path):
-    """Open and read the JSON file"""
     with open(json_path, 'r') as file:
         data = json.load(file)
     print(data)
@@ -124,12 +125,13 @@ def read_msa_build_seq_dict(file_path):
     fasta_file = SeqIO.parse(file_path, 'fasta')
     seq_dict = {}
     for record in fasta_file:
-        seq_dict[record.description] = record.seq
+        seq_dict[record.description] = record
 
     return seq_dict
 
+
 if __name__ == '__main__':
-    #path for full length sequences fasta file from Hmmer, results for the search of Joel's sequences in SwissProt
+    # path for full length sequences fasta file from Hmmer, results for the search of Joel's sequences in SwissProt
     fullseq_path_cav1 = r"C:\Users\sheer\Desktop\projectBenTalLab\HMMER\full_length_fasta\Q13936_CaV1.2 -fullseq.fa.gz"
     fullseq_path_cav2 = r"C:\Users\sheer\Desktop\projectBenTalLab\HMMER\full_length_fasta\Q00975_CaV2.2 -fullseq.fa.gz"
     fullseq_path_cav3 = r"C:\Users\sheer\Desktop\projectBenTalLab\HMMER\full_length_fasta\O43497_CaV3.1 -fullseq.fa.gz"
@@ -173,7 +175,7 @@ if __name__ == '__main__':
 
 
     #write_dict_to_fasta([cac_seq_dict_cav1], r"C:\Users\sheer\Desktop\projectBenTalLab\HMMER\CAC_homologs_from_hammer_original_labels.fasta")
-    #write_dict_to_fasta([cac_seq_dict_cav1],r"C:\Users\sheer\Desktop\projectBenTalLab\HMMER\CAC_homologs_from_hammer_labels_by_type.fasta")
+    write_dict_to_fasta([cac_seq_dict_cav1],r"C:\Users\sheer\Desktop\projectBenTalLab\HMMER\CAC_homologs_from_hammer_labels_by_type.fasta")
 
     print("\nsequences from FlyBase")
     flybase_cav1 = r"C:\Users\sheer\Desktop\projectBenTalLab\FlyBase\FlyBase_cav1.fasta"
@@ -183,13 +185,11 @@ if __name__ == '__main__':
     flybase_cav2_dict = discarded_short_seq(read_protein_seq_flybase(flybase_cav2))
     flybase_cav3_dict = discarded_short_seq(read_protein_seq_flybase(flybase_cav3))
     fly_dicts = [flybase_cav1_dict, flybase_cav2_dict, flybase_cav3_dict]
-    write_dict_to_fasta(fly_dicts, r"C:\Users\sheer\Desktop\projectBenTalLab\FlyBase\merge_flybase_seq.fasta",
-                        seq_format="seq_record")
+    write_dict_to_fasta(fly_dicts, r"C:\Users\sheer\Desktop\projectBenTalLab\FlyBase\merge_flybase_seq.fasta")
 
     merge_flybase_swissprot = [flybase_cav1_dict, flybase_cav2_dict, flybase_cav3_dict, cac_seq_dict_cav1]
     write_dict_to_fasta(merge_flybase_swissprot,
-                        r"C:\Users\sheer\Desktop\projectBenTalLab\FlyBase\merge_flybase_and_swissprot_seq.fasta",
-                        seq_format="seq_record")
+                        r"C:\Users\sheer\Desktop\projectBenTalLab\FlyBase\merge_flybase_and_swissprot_seq.fasta")
 
 
 

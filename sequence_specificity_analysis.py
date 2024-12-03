@@ -1,10 +1,8 @@
 import pandas as pd
-import numpy as np
 from openpyxl import load_workbook
 from openpyxl.styles import PatternFill
 
-
-# Define amino acid groups
+"""define amino acid groups"""
 AMINO_ACID_GROUPS = {
     "nonpolar": {'A', 'V', 'L', 'C', 'I', 'M', 'F', 'P', 'W', 'G'},
     "polar uncharged": {'S', 'T', 'N', 'Q', 'Y'},
@@ -12,15 +10,17 @@ AMINO_ACID_GROUPS = {
     "negative": {'D', 'E'},
 }
 
+
+"""determine the group of an amino acid"""
 def get_amino_acid_group(aa):
-    """Determine the group of an amino acid"""
     for group, amino_acids in AMINO_ACID_GROUPS.items():
         if aa in amino_acids:
             return group
     return None
 
+
+"""analyze mutations in compare_positions_df, determine for every position if it's a radical or neutral change"""
 def analyze_mutations(df, comparison_type, taxonomy, num_seq):
-    """Analyze mutations in compare_positions_df, determine for every position if it's a radical or neutral change"""
     mutation_results = {}
 
     for position in df.columns:
@@ -78,8 +78,3 @@ def find_mutant_segments(df):
             df.loc["Consecutive Mutations", pos] = "*"
 
     return df
-
-
-
-
-
