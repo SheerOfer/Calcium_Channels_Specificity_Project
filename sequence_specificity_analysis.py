@@ -57,6 +57,42 @@ def analyze_mutations(df, comparison_type, taxonomy, num_seq):
     wb.save(file_name)
 
 
+    # Count positions where the channels differs
+    cav1 = result_df.iloc[0]
+    cav2 = result_df.iloc[1]
+
+    differences_1_2 = 0
+    different_aa_families_positions_1_2 = 0
+    differences_1_3 = 0
+    different_aa_families_positions_1_3 = 0
+    differences_2_3 = 0
+    different_aa_families_positions_2_3 = 0
+    for column in result_df.columns:
+        cav1_aa = cav1[column]
+        cav2_aa = cav2[column]
+
+        # Compare cav1 & cav2
+        for aa in result_df[column][1:2]:  # Skip the first row
+            if cav1_aa is not None and aa is not None and cav1_aa != aa:
+                differences_1_2 += 1
+                if result_df[column][3] is not None:
+                    different_aa_families_positions_1_2 += 1
+
+        # Compare cav1 & cav2
+        for aa in result_df[column][2:3]:  # Skip the first row
+            if cav1_aa is not None and aa is not None and cav1_aa != aa:
+                differences_1_3 += 1
+                if result_df[column][3] is not None:
+                    different_aa_families_positions_1_3 += 1
+
+        # Compare cav2 & cav3
+        for aa in result_df[column][2:3]:  # Skip the first row
+            if cav2_aa is not None and aa is not None and cav2_aa != aa:
+                differences_2_3 += 1
+                if result_df[column][3] is not None:
+                    different_aa_families_positions_2_3 += 1
+
+
 def find_mutant_segments(df):
     positions = sorted(df.columns)
     consecutive_mutations = []
